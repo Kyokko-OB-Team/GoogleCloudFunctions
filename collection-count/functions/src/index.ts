@@ -33,28 +33,35 @@ exports.countCollections = functions.https.onRequest((req, res) => {
 });
 
 // Documentの一番新しいデータを取得
-//exports.getNewDocument = functions.https.onRequest((req, res) => {
+// exports.getNewDocument = functions.https.onRequest((req, res) => {
 //  const collenctionName = req.body["collection"];
 //  const collectionRef = fireStore.collection(collenctionName);
 //
-//});
+// });
 
 // Batch フィールドに時間の情報を追加
 exports.setTimeData = functions.https.onRequest(async (req, res) => {
   const collectionName = req.body["collection"];
-  res.send('exec setTimeData function.');
 
   const db = admin.firestore();
   let batch = db.batch();
-  const snapshots = await db.collection(collectionName).get();
+  const snapshots = await db.collection(collectionName)
+      .get();
+  let log = "";
+  res.send("function exec.\n");
 
   snapshots.docs.map((doc, index) => {
-//    if ((index + 1) % 500 === 0) {
-//      batch.commit(); //500件毎にコミット
-//      batch = db.batch(); //新しいインスタンス
-//    }
-    // update
-    batch.update(doc.ref, {time: doc.id});
+    if (doc.get("time") === undefined) {
+      if ((index + 1) % 100 === 0) {
+        batch.commit(); // 100件毎にコミット
+        batch = db.batch(); // 新しいインスタンス
+        console.log(log);
+        log = "";
+      }
+      // update
+      batch.set(doc.ref, {time: Number(doc.id)}, {merge: true});
+      log += "index: " + index + ", docID: " + doc.id + "\n";
+    }
   });
   batch.commit();
 });
