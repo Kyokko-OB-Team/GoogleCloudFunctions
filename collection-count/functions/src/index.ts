@@ -25,13 +25,13 @@ exports.countCollections = functions.https.onRequest((req, res) => {
   if (req.method === "GET") {
     if (req.query.collection !== undefined) {
       collectionName = req.query.collection.toString();
-      eolCode = "<br>";
     }
+    eolCode = "<br>";
   }
   const collectionsRef = fireStore.collection(collectionName);
   collectionsRef.get().then((snap) => {
     res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-HEaders",
+    res.header("Access-Control-Allow-Headers",
         "Origin, X-Requested-With, Content-Type, Accept");
     let strOut = eolCode;
     strOut += collectionName + eolCode;
@@ -45,17 +45,21 @@ exports.countCollections = functions.https.onRequest((req, res) => {
 
 // Documentの一番新しいデータを取得
 exports.getLatestDocument = functions.https.onRequest(async (req, res) => {
-//  const collenctionName = req.body["collection"];
+  let collenctionName = "";
   let eolCode = "";
   if (req.method === "POST") {
+    collenctionName = req.body["collection"];
     eolCode = "\n";
   }
   if (req.method === "GET") {
+    if (req.query.collection !== undefined) {
+      collenctionName = req.query.collection.toString();
+    }
     eolCode = "<br>";
   }
 
   const db = admin.firestore();
-  const collectionRef = db.collection("sensor-data_test-env");
+  const collectionRef = db.collection(collenctionName);
   const snapshot = await collectionRef.orderBy("time", "desc").limit(1).get();
   const temp = snapshot.docs[0].get("temperature");
   const humi = snapshot.docs[0].get("humidity");
