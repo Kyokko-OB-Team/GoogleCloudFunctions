@@ -37,8 +37,7 @@ $ curl https://us-central1-kyokko-ob-team-8a210.cloudfunctions.net/countCollecti
 ## getLatestDocument
 
 FireStoreに登録されている要素のうち1番最新の要素を取得します。<br>
-現在は取得するコレクションは`sensor-data_test-env`で固定になっています。<br>
-そのうちパラメータ指定で取得できるようにする予定です。<br>
+パラメータは`collection`のみで、値はコレクション名を指定してください。<br>
 <br>
 
 ### GETの場合
@@ -46,7 +45,7 @@ FireStoreに登録されている要素のうち1番最新の要素を取得し�
 そのままAPIを叩いてください。<br>
 以下はブラウザでAPIを叩く場合の例です。<br>
 
-https://us-central1-kyokko-ob-team-8a210.cloudfunctions.net/getLatestDocument
+https://us-central1-kyokko-ob-team-8a210.cloudfunctions.net/getLatestDocument?collection=sensor-data_test-env
 <br>
 <br>
 
@@ -55,7 +54,7 @@ https://us-central1-kyokko-ob-team-8a210.cloudfunctions.net/getLatestDocument
 以下はcurlコマンドでAPIを叩く場合の例です。<br>
 
 ```
-curl -X POST https://us-central1-kyokko-ob-team-8a210.cloudfunctions.net/getLatestDocument
+curl https://us-central1-kyokko-ob-team-8a210.cloudfunctions.net/getLatestDocument -d 'collection=sensor-data_test-env'
 ```
 
 ## setTimeData
