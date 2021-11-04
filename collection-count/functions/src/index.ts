@@ -46,16 +46,14 @@ exports.countCollections = functions.https.onRequest((req, res) => {
 // Documentの一番新しいデータを取得
 exports.getLatestDocument = functions.https.onRequest(async (req, res) => {
   let collenctionName = "";
-  let eolCode = "";
   if (req.method === "POST") {
     collenctionName = req.body["collection"];
-    eolCode = "\n";
-  }
-  if (req.method === "GET") {
+  } else if (req.method === "GET") {
     if (req.query.collection !== undefined) {
       collenctionName = req.query.collection.toString();
+    } else {
+      res.status(400).end();
     }
-    eolCode = "<br>";
   }
 
   const db = admin.firestore();
@@ -73,15 +71,18 @@ exports.getLatestDocument = functions.https.onRequest(async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept");
-  let strOut = eolCode;
-  strOut += "sensor-data_test-env" + eolCode;
-  strOut += "最新データ" + eolCode;
-  strOut += "時間: ";
-  strOut += date.toLocaleString("ja-JP") + eolCode;
-  strOut += "温度: " + temp.toFixed(2) + eolCode;
-  strOut += "湿度: " + humi.toFixed(2) + eolCode;
-  strOut += "CO2濃度: " + co2 + eolCode;
-  res.status(200).send(strOut);
+  res.type("application/json");
+
+  res.json(
+      {
+        name: collenctionName,
+        time: date.toLocaleString("ja-JP"),
+        temperature: temp.toFixed(2),
+        humidity: humi.toFixed(2),
+        co2Concentration: co2,
+      }
+  );
+  res.status(200).send();
 });
 
 // Batch フィールドに時間の情報を追加
